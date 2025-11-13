@@ -6,20 +6,47 @@ model = YOLO("yolov8n.pt")
 
 cap = cv2.VideoCapture("./video/test.mp4")
 
-cv2.namedWindow("Car detection", cv2.WINDOW_NORMAL)
+cv2.namedWindow("Detección de Autos", cv2.WINDOW_NORMAL)
+
+roi_area2 = np.array([
+    (109,189),
+    (147,260),
+    (216,252),
+    (181,184)
+],np.int32)
 
 while True:
     ret, frame = cap.read()
     if not ret:
         break
 
-    results = model(frame)
+    cv2.polylines(frame, [roi_area2], isClosed=True, color=(255, 0, 0), thickness=1)
 
-    annotated_frame = results[0].plot()
+    results = model.predict(source=frame, verbose=False)
+    annotated_frame = frame.copy()
 
-    cv2.imshow("Car detection", annotated_frame)
+    for box in results[0].boxes:
+        cls_id = int(box.cls[0])
+        cls_name = model.names[cls_id]
+        conf = float(box.conf[0])
+        x1, y1, x2, y2 = map(int, box.xyxy[0])
 
-    if cv2.waitKey(1) & 0xFF == 27:
+        cx = int((x1 + x2) / 2)
+        cy = int((y1 + y2) / 2)
+
+        inside = cv2.pointPolygonTest(roi_area2, (cx, cy), False)
+
+        if inside >= 0:
+            cv2.rectangle(annotated_frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+            cv2.putText(annotated_frame, f"{cls_name} {conf:.2f}", (x1, y1 - 10),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+
+    cv2.polylines(annotated_frame, [roi_area2], isClosed=True, color=(255, 0, 0), thickness=1)
+
+    cv2.imshow("Detección de Autos", annotated_frame)
+
+    key = cv2.waitKey(1) & 0xFF
+    if key == 27:
         break
 
 cap.release()
