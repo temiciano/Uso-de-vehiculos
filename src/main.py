@@ -4,15 +4,15 @@ from ultralytics import YOLO
 
 model = YOLO("yolov8n.pt")
 
-cap = cv2.VideoCapture("./video/test.mp4")
+cap = cv2.VideoCapture("./video/trozo360.mp4")
 
 cv2.namedWindow("Detección de Autos", cv2.WINDOW_NORMAL)
 
 roi_area2 = np.array([
-    (109,189),
+    (109,179),
     (147,260),
     (216,252),
-    (181,184)
+    (170,170)
 ],np.int32)
 
 while True:
