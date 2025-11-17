@@ -3,17 +3,16 @@ import numpy as np
 from ultralytics import YOLO
 
 model = YOLO("yolov8n.pt")
-
-cap = cv2.VideoCapture("./video/trozo360.mp4")
-
+cap = cv2.VideoCapture("./video/trozo648.mp4")
 cv2.namedWindow("Detección de Autos", cv2.WINDOW_NORMAL)
 
 roi_area2 = np.array([
-    (109,179),
+    (109,186),
     (147,260),
-    (216,252),
-    (170,170)
+    (227,248),
+    (180,178)
 ],np.int32)
+#Puerta garage 0 y 3
 
 while True:
     ret, frame = cap.read()
