@@ -1,13 +1,26 @@
 import cv2
 import numpy as np
 from ultralytics import YOLO
-import math
+from datetime import datetime, timedelta
+import csv
+import time
+import torch
 
-model = YOLO("yolov8n.pt")
-cap = cv2.VideoCapture("./video/trozo942.mp4")
-cv2.namedWindow("Detección de Autos", cv2.WINDOW_NORMAL)
+# =====================================================
+# CONFIGURACIÓN
+# =====================================================
+VIDEO_PATH = "./video/output.mp4"
+MODEL_PATH = "yolov8n.pt"
+TRACKER_CONFIG = "bytetrack.yaml"    # <-- tracker integrado
+OUTPUT_CSV = "conteo_autos.csv"
 
-roi_area2 = np.array([
+SKIP_FRAMES = 2            # procesa 1 de cada N
+MAX_WIDTH = 960
+CONFIDENCE = 0.35
+
+HORA_INICIO = datetime(2025, 11, 10, 6, 0, 0)
+
+ROI_ORIGINAL = np.array([
     (41,158),
     (66,189),
     (104,186),
@@ -15,17 +28,16 @@ roi_area2 = np.array([
     (234,248),
     (187,181),
     (201,141)
-],np.int32)
-#Puerta garage 0 y 3
+], np.int32)
 
-line_p1 = (98,186)
-line_p2 = (183,176)
+LINE_P1 = (98,186)
+LINE_P2 = (183,176)
 
-entradas = 0
-salidas = 0
-
-next_id = 0
-tracks = {}  # id -> {cx, cy, prev, class, missed}
+# =====================================================
+# FUNCIONES
+# =====================================================
+def scale_points(points, scale):
+    return np.array([(int(x*scale), int(y*scale)) for (x,y) in points], np.int32)
 
 def crossed_line(prev, curr, p1, p2):
     def side(pt):
@@ -33,116 +45,147 @@ def crossed_line(prev, curr, p1, p2):
                        (p2[1]-p1[1])*(pt[0]-p1[0]))
     return side(prev), side(curr)
 
-def match_track(cx, cy, tracks, max_dist=60):
-    best_id = None
-    best_dist = max_dist
+def timestamp_real(frame_idx, fps):
+    segundos = frame_idx / fps
+    return HORA_INICIO + timedelta(seconds=segundos)
 
-    for tid, t in tracks.items():
-        dist = math.hypot(cx - t["cx"], cy - t["cy"])
-        if dist < best_dist:
-            best_dist = dist
-            best_id = tid
+# =====================================================
+# CARGAR MODELO + TRACKER
+# =====================================================
+model = YOLO(MODEL_PATH)
 
-    return best_id
+if torch.cuda.is_available():
+    try:
+        model.to("cuda")
+        print("Modelo en CUDA")
+    except:
+        pass
 
+# =====================================================
+# VIDEO
+# =====================================================
+cap = cv2.VideoCapture(VIDEO_PATH)
+fps_video = cap.get(cv2.CAP_PROP_FPS) or 30
+total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
+print("FPS:", fps_video, "Frames:", total_frames)
+
+# =====================================================
+# CSV
+# =====================================================
+csv_file = open(OUTPUT_CSV, "w", newline="", encoding="utf-8")
+writer = csv.writer(csv_file)
+writer.writerow([
+    "frame_idx", "timestamp", "evento",
+    "track_id", "clase",
+    "cx", "cy", "x1", "y1", "x2", "y2"
+])
+
+# =====================================================
+# VARIABLES
+# =====================================================
+frame_idx = -1
+entradas = 0
+salidas = 0
+prev_positions = {}   # track_id -> (cx, cy)
+
+start = time.time()
+processed = 0
+
+# =====================================================
+# LOOP PRINCIPAL
+# =====================================================
 while True:
+    frame_idx += 1
     ret, frame = cap.read()
     if not ret:
         break
 
-    cv2.polylines(frame, [roi_area2], True, (255,0,0), 1)
-    cv2.line(frame, line_p1, line_p2, (0,255,255), 1,4)
+    # SKIP FRAMES
+    if frame_idx % SKIP_FRAMES != 0:
+        continue
 
-    results = model.predict(frame, verbose=False)
-    annotated = frame.copy()
+    processed += 1
 
-    detections = []
+    # Resize
+    h, w = frame.shape[:2]
+    scale = 1.0
+    if w > MAX_WIDTH:
+        scale = MAX_WIDTH / w
+        frame = cv2.resize(frame, (int(w*scale), int(h*scale)))
 
-    # YOLO detections → lista simple
-    for box in results[0].boxes:
-        cls_id = int(box.cls[0])
-        original = model.names[cls_id]
+    roi_area = scale_points(ROI_ORIGINAL, scale)
+    line_p1 = scale_points([LINE_P1], scale)[0]
+    line_p2 = scale_points([LINE_P2], scale)[0]
 
-        if original not in ["car", "truck", "bus"]:
+    # =====================================================
+    # SE USA EL TRACKER INTEGRADO (BYTETrack)
+    # =====================================================
+    results = model.track(
+        frame,
+        persist=True,
+        conf=CONFIDENCE,
+        tracker=TRACKER_CONFIG,
+        verbose=False
+    )
+
+    if results[0].boxes.id is None:
+        continue
+
+    ids = results[0].boxes.id.cpu().numpy().astype(int)
+    xyxy = results[0].boxes.xyxy.cpu().numpy()
+    cls_ids = results[0].boxes.cls.cpu().numpy().astype(int)
+
+    for i, track_id in enumerate(ids):
+        x1, y1, x2, y2 = map(int, xyxy[i])
+        cls_name = model.names[cls_ids[i]]
+
+        if cls_name not in ["car", "truck", "bus"]:
             continue
 
-        cls_name = "vehicule"
-
-        x1, y1, x2, y2 = map(int, box.xyxy[0])
         cx = (x1 + x2) // 2
         cy = (y1 + y2) // 2
 
-        inside = cv2.pointPolygonTest(roi_area2, (cx,cy), False)
+        inside = cv2.pointPolygonTest(roi_area, (cx, cy), False)
         if inside < 0:
             continue
 
-        detections.append((cx, cy, x1, y1, x2, y2, cls_name))
-
-    # ---- TRACKING ----
-    used_ids = set()
-
-    for (cx, cy, x1, y1, x2, y2, cls_name) in detections:
-        assigned_id = match_track(cx, cy, tracks)
-
-        if assigned_id is None:
-            # crear track nuevo
-            tracks[next_id] = {
-                "cx": cx, "cy": cy,
-                "prev": (cx, cy),
-                "class": cls_name,  # CLASE FIJA
-                "missed": 0
-            }
-            assigned_id = next_id
-            next_id += 1
-        else:
-            tracks[assigned_id]["cx"] = cx
-            tracks[assigned_id]["cy"] = cy
-            tracks[assigned_id]["missed"] = 0
-
-        used_ids.add(assigned_id)
-
-        # cruces
-        prev = tracks[assigned_id]["prev"]
         curr = (cx, cy)
+        prev = prev_positions.get(track_id, curr)
+
+        hora_real = timestamp_real(frame_idx, fps_video).strftime("%Y-%m-%d %H:%M:%S")
+
+        # DETECCIÓN DE CRUCE
         side_p, side_c = crossed_line(prev, curr, line_p1, line_p2)
 
         if side_p != side_c:
-            # dirección según movimiento vertical
             if curr[1] < prev[1]:
                 salidas += 1
+                evento = "salida"
             else:
                 entradas += 1
+                evento = "entrada"
 
-        tracks[assigned_id]["prev"] = curr
+            writer.writerow([
+                frame_idx, hora_real, evento,
+                track_id, cls_name,
+                cx, cy, x1, y1, x2, y2
+            ])
 
-        # dibujar
-        fixed_class = tracks[assigned_id]["class"]  # CLASE CONGELADA
-        cv2.rectangle(annotated, (x1, y1), (x2, y2), (0,255,0), 2)
-        cv2.putText(annotated, f"{fixed_class} ID:{assigned_id}",
-                    (x1, y1-10),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,255,0), 1)
+        prev_positions[track_id] = curr
 
-    # eliminar tracks no actualizados
-    to_delete = []
-    for tid in tracks:
-        if tid not in used_ids:
-            tracks[tid]["missed"] += 1
-            if tracks[tid]["missed"] > 10:
-                to_delete.append(tid)
+# =====================================================
+# FIN
+# =====================================================
+elapsed = time.time() - start
 
-    for tid in to_delete:
-        del tracks[tid]
+print("\n=== RESULTADOS ===")
+print("Frames procesados:", processed)
+print("Tiempo total:", round(elapsed, 2), "s")
+print("Velocidad:", round(processed/elapsed, 2), "FPS")
+print("Entradas:", entradas)
+print("Salidas:", salidas)
 
-    cv2.putText(annotated, f"Entradas: {entradas}", (20,40),
-                cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,0), 2)
-    cv2.putText(annotated, f"Salidas: {salidas}", (20,80),
-                cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 2)
-
-    cv2.imshow("Detección de Autos", annotated)
-
-    if cv2.waitKey(1) & 0xFF == 27:
-        break
-
+csv_file.close()
 cap.release()
-cv2.destroyAllWindows()
+print("\nCSV guardado en", OUTPUT_CSV)
