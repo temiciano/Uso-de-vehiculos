@@ -11,27 +11,31 @@ import torch
 # =====================================================
 VIDEO_PATH = "./video/output.mp4"
 MODEL_PATH = "yolov8n.pt"
-TRACKER_CONFIG = "bytetrack.yaml"    # <-- tracker integrado
+TRACKER_CONFIG = "bytetrack.yaml"
 OUTPUT_CSV = "conteo_autos.csv"
 
-SKIP_FRAMES = 2            # procesa 1 de cada N
+SKIP_FRAMES = 2
 MAX_WIDTH = 960
 CONFIDENCE = 0.35
 
-HORA_INICIO = datetime(2025, 11, 10, 6, 0, 0)
+# =============================
+# CAMBIAR FECHA
+# =============================
+HORA_INICIO = datetime(2025, 12, 1, 6, 0, 0)
 
 ROI_ORIGINAL = np.array([
-    (41,158),
-    (66,189),
-    (104,186),
-    (138,260),
-    (234,248),
-    (187,181),
-    (201,141)
+    (48,130),
+    (71,161),
+    (111,157),
+    (157,232),
+    (253,220),
+    (196,144),
+    (220,113)
 ], np.int32)
 
-LINE_P1 = (98,186)
-LINE_P2 = (183,176)
+LINE_P1 = (111,157)
+LINE_P2 = (194,146)
+
 
 # =====================================================
 # FUNCIONES
@@ -57,7 +61,7 @@ model = YOLO(MODEL_PATH)
 if torch.cuda.is_available():
     try:
         model.to("cuda")
-        print("Modelo en CUDA")
+        print("Corriendo en CUDA")
     except:
         pass
 
@@ -71,7 +75,7 @@ total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 print("FPS:", fps_video, "Frames:", total_frames)
 
 # =====================================================
-# CSV
+# CSV output
 # =====================================================
 csv_file = open(OUTPUT_CSV, "w", newline="", encoding="utf-8")
 writer = csv.writer(csv_file)
@@ -87,7 +91,7 @@ writer.writerow([
 frame_idx = -1
 entradas = 0
 salidas = 0
-prev_positions = {}   # track_id -> (cx, cy)
+prev_positions = {}
 
 start = time.time()
 processed = 0
@@ -101,13 +105,11 @@ while True:
     if not ret:
         break
 
-    # SKIP FRAMES
     if frame_idx % SKIP_FRAMES != 0:
         continue
 
     processed += 1
 
-    # Resize
     h, w = frame.shape[:2]
     scale = 1.0
     if w > MAX_WIDTH:
@@ -119,7 +121,7 @@ while True:
     line_p2 = scale_points([LINE_P2], scale)[0]
 
     # =====================================================
-    # SE USA EL TRACKER INTEGRADO (BYTETrack)
+    # Bytetrack
     # =====================================================
     results = model.track(
         frame,

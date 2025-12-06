@@ -1,10 +1,20 @@
-Objetivos:
-Detectar cuantos autos entran y salen de un estacionamiento
-Detectar cuando la reja se abre
-Detectar si un auto entra o sale
-Hora/Dia de cada salida y entrada
+# **Conteo de entrada y salida de vehiculos
 
-Pasos:
+---
+
+# *Description
+El sistema analiza grabaciones en formato .mp4 provenientes de una cámara IP. 
+El enfoque del proyecto es simple y directo: usar un único ROI (Región de Interés) para identificar el movimiento de vehículos y su dirección, sin depender de otros elementos del entorno.
+
+---
+
+# *Objetivos
+- Detectar vehículos dentro de un área específica del video (ROI).
+- Determinar si un vehículo está entrando o saliendo.
+- Registrar fecha y hora de cada evento.
+- Generar estadísticas diarias de entradas y salidas.
+
+# Flujo de trabajo
 Se usaran archivos .mp4 de la camara (no en vivo para este proyecto)
 Para detectar esto se tomara 1 criterio.
 Habra siempre un sensor siguiendo el letrero del porton (10KM), mientras este letrero entre en X Area la camara registrara el movimiento en la segunda area.
