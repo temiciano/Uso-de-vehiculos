@@ -17,12 +17,20 @@ El enfoque del proyecto es simple y directo: usar un único ROI (Región de Inte
 # Flujo de trabajo
 Se usaran archivos .mp4 de la camara (no en vivo para este proyecto)
 Para detectar esto se tomara 1 criterio.
-Habra siempre un sensor siguiendo el letrero del porton (10KM), mientras este letrero entre en X Area la camara registrara el movimiento en la segunda area.
-La segunda Area corresponde al espacio en el que los autos entran y salen.
-La segunda Area solo registrara el cuadrante interior(Estacionamiento), al momento de abrirse la reja se detecta el movimiento del vehiculo.
+El Area solo registrara el cuadrante interior(Estacionamiento)
 Si es hacia afuera entonces Salidas +=1
 Si es hacia adentro entonces Entradas +=1
 
+---
+
+# Datos Importantes
+Dia
+Salidas y entradas totales del dia
+Distribucion de entradas y salidas cada 1 horas 
+(usar un color para entrada y otro para salidas)
+15 Horas Diarias (6:00 - 21:00) (Distribuir en eje X)
+
+---
 
 Hardware:
 PC con GPU
