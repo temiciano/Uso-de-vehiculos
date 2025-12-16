@@ -7,6 +7,12 @@ Se recopilaran datos de un estacionamiento residencial con el fin de registrar e
 El sistema analiza grabaciones en formato .mp4 provenientes de una cámara IP. 
 El enfoque del proyecto es simple y directo: usar un único ROI (Región de Interés) para identificar el movimiento de vehículos y su dirección, sin depender de otros elementos del entorno.
 
+Se buscan responder 4 preguntas al finalizar estre proyecto
+1. A que hora salen mas autos?
+2. A que hora entran mas autos?
+3. Que dias salen mas autos?
+4. Que dias salen menos autos?
+
 ---
 
 ## Tecnologias utilizadas
@@ -25,7 +31,8 @@ El enfoque del proyecto es simple y directo: usar un único ROI (Región de Inte
 - Determinar si un vehículo está entrando o saliendo.
 - Registrar fecha y hora de cada evento.
 - Generar estadísticas diarias de entradas y salidas.
-Ejemplo video/gif aqui
+
+![Detection and ROI](video/sample.gif)
 
 ---
 
@@ -44,13 +51,6 @@ Salidas y entradas totales del dia
 Distribucion de entradas y salidas cada 1 horas ambas variables diferenciadas por color
 15 Horas Diarias (6:00 - 21:00) (Distribuir en eje X)
 
----
-
-# Preguntas a respoder
-1. A que hora salen mas autos?
-2. A que hora entran mas autos?
-3. Que dias salen mas autos?
-4. Que dias salen menos autos?
 
 ---
 
@@ -60,7 +60,7 @@ Mostrar csv con resumen final.
 2. Los dias que menor entrada y salida de vehiculos hay es el sabado y domingo.
 3. Las entradas son proporcionales a las salidas.
 4. El dia Martes-11-Nov fue el unico dia lluvioso, y fue el dia que mas salidas registra, pero faltan mas datos para resultados concluyentes.
-Mostrar grafica de barras de ese dia aqui
+![grafica 11](graph/day2.png)
 
 ---
 
