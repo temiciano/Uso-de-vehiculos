@@ -1,18 +1,33 @@
-# **Conteo de entrada y salida de vehiculos
+# Conteo de entrada y salida de vehiculos
 
 ---
 
-# *Description
+# Description
+Se recopilaran datos de un estacionamiento residencial con el fin de registrar entradas y salidas diarias desde las 6:00 hasta las 21:00 durante el mes de Noviembre. El objetivo es determinar a que horas hay mas entrada y salida de vehiculos y finalmente que dias la gente usa mas y que dias usa menos sus autos.
 El sistema analiza grabaciones en formato .mp4 provenientes de una cámara IP. 
 El enfoque del proyecto es simple y directo: usar un único ROI (Región de Interés) para identificar el movimiento de vehículos y su dirección, sin depender de otros elementos del entorno.
 
 ---
 
-# *Objetivos
+## Tecnologias utilizadas
+- Python 3.10
+- OpenCV
+- YOLOv8 (Ultralytics)
+- ByteTrack
+- Pandas / NumPy
+- Matplotlib
+- Jupyter Notebook
+
+---
+
+# Objetivos
 - Detectar vehículos dentro de un área específica del video (ROI).
 - Determinar si un vehículo está entrando o saliendo.
 - Registrar fecha y hora de cada evento.
 - Generar estadísticas diarias de entradas y salidas.
+Ejemplo video/gif aqui
+
+---
 
 # Flujo de trabajo
 Se usaran archivos .mp4 de la camara (no en vivo para este proyecto)
@@ -26,9 +41,10 @@ Si es hacia adentro entonces Entradas +=1
 # Datos Importantes
 Dia
 Salidas y entradas totales del dia
-Distribucion de entradas y salidas cada 1 horas 
-(usar un color para entrada y otro para salidas)
+Distribucion de entradas y salidas cada 1 horas ambas variables diferenciadas por color
 15 Horas Diarias (6:00 - 21:00) (Distribuir en eje X)
+
+---
 
 # Preguntas a respoder
 1. A que hora salen mas autos?
@@ -39,12 +55,15 @@ Distribucion de entradas y salidas cada 1 horas
 ---
 
 # Resultados
+Mostrar csv con resumen final.
 1. Los dias que mayor entrada y salida de vehiculos hay es dentro de la semana (Lunes - Viernes). El pico de hora de salida es a las 7:00. Eso coincide con las horas de entrada al trabajo. Y el pico de horas de entrada es dentro de las 18:00 y 19:00. Lo que tambien coincide con los horarios laborales regulares.
 2. Los dias que menor entrada y salida de vehiculos hay es el sabado y domingo.
 3. Las entradas son proporcionales a las salidas.
 4. El dia Martes-11-Nov fue el unico dia lluvioso, y fue el dia que mas salidas registra, pero faltan mas datos para resultados concluyentes.
+Mostrar grafica de barras de ese dia aqui
 
 ---
+
 Hardware:
-PC con GPU
+Gpu Nvidia con tecnologia CUDA (para procesado de videos mas rapido)
 Camara IP
