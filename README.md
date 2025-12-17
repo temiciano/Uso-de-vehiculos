@@ -32,7 +32,7 @@ Se buscan responder 4 preguntas al finalizar estre proyecto
 - Registrar fecha y hora de cada evento.
 - Generar estadísticas diarias de entradas y salidas.
 
-![Detection and ROI](video/sample.gif)
+<img src="video/sample.gif" width="60%">
 
 ---
 
@@ -55,12 +55,17 @@ Distribucion de entradas y salidas cada 1 horas ambas variables diferenciadas po
 ---
 
 # Resultados
-Mostrar csv con resumen final.
-1. Los dias que mayor entrada y salida de vehiculos hay es dentro de la semana (Lunes - Viernes). El pico de hora de salida es a las 7:00. Eso coincide con las horas de entrada al trabajo. Y el pico de horas de entrada es dentro de las 18:00 y 19:00. Lo que tambien coincide con los horarios laborales regulares.
-2. Los dias que menor entrada y salida de vehiculos hay es el sabado y domingo.
-3. Las entradas son proporcionales a las salidas.
-4. El dia Martes-11-Nov fue el unico dia lluvioso, y fue el dia que mas salidas registra, pero faltan mas datos para resultados concluyentes.
-![grafica 11](graph/day2.png)
+Resultados finales
+[`resumen_diario.csv`](data/clean/resumen_diario.csv)
+En base a los datos aqui mostrados, podemos concluir lo siguiente:
+
+1. Los dias que mayor entrada y salida de vehiculos hay es dentro de la semana (Lunes - Viernes). 
+2. El pico de hora de salida es a las 7:00. Eso coincide con las horas de entrada al trabajo. Y el pico de horas de entrada es dentro de las 18:00 y 19:00. Lo que tambien coincide con los horarios laborales regulares.
+3. Los dias que menor entrada y salida de vehiculos son los dias sabado y domingo.
+4. Las entradas son proporcionales a las salidas.
+5. Los dias de la semana varian mucho en cuanto a salidas y entradas entre si, pero parece ser una coincidencia mas que una causa directa de algo. La cantidad de datos disponible no permite extraer conclusiones firmes en este aspecto.
+6. El martes 11 de noviembre, único día con condiciones de lluvia durante el período analizado, y fue el dia que mas salidas registra, pero faltan mas datos para resultados concluyentes.
+<img src="graph/day2.png" width="50%">
 
 ---
 
