@@ -32,7 +32,7 @@ Se buscan responder 4 preguntas al finalizar estre proyecto
 - Registrar fecha y hora de cada evento.
 - Generar estadísticas diarias de entradas y salidas.
 
-<img src="video/sample.gif" width="60%">
+![Detection and ROI](video/sample.gif)
 
 ---
 
@@ -42,6 +42,7 @@ Para detectar esto se tomara 1 criterio.
 El Area solo registrara el cuadrante interior(Estacionamiento)
 Si es hacia afuera entonces Salidas +=1
 Si es hacia adentro entonces Entradas +=1
+Para conseguir esto se uso un rastrador para cada vehiculo que entre en el ROI, en este caso se uso ByteTrack
 
 ---
 
@@ -51,20 +52,19 @@ Salidas y entradas totales del dia
 Distribucion de entradas y salidas cada 1 horas ambas variables diferenciadas por color
 15 Horas Diarias (6:00 - 21:00) (Distribuir en eje X)
 
-
 ---
 
-# Resultados
+# Resultados y conclusiones
 Resultados finales
 [`resumen_diario.csv`](data/clean/resumen_diario.csv)
 En base a los datos aqui mostrados, podemos concluir lo siguiente:
 
-1. Los dias que mayor entrada y salida de vehiculos hay es dentro de la semana (Lunes - Viernes). 
+1. Los dias que mayor entrada y salida de vehiculos hay es dentro de la semana (Lunes - Viernes).
 2. El pico de hora de salida es a las 7:00. Eso coincide con las horas de entrada al trabajo. Y el pico de horas de entrada es dentro de las 18:00 y 19:00. Lo que tambien coincide con los horarios laborales regulares.
 3. Los dias que menor entrada y salida de vehiculos son los dias sabado y domingo.
 4. Las entradas son proporcionales a las salidas.
 5. Los dias de la semana varian mucho en cuanto a salidas y entradas entre si, pero parece ser una coincidencia mas que una causa directa de algo. La cantidad de datos disponible no permite extraer conclusiones firmes en este aspecto.
-6. El martes 11 de noviembre, único día con condiciones de lluvia durante el período analizado, y fue el dia que mas salidas registra, pero faltan mas datos para resultados concluyentes.
+6. El martes 11 de noviembre, único día con condiciones de lluvia durante el período analizado, y fue el dia que mas salidas registra, podria significar una relacion entre lluvia y uso de autos pero faltan mas datos para resultados concluyentes.
 <img src="graph/day2.png" width="50%">
 
 ---
