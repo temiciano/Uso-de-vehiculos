@@ -69,10 +69,12 @@ En base a los datos aqui mostrados, podemos concluir lo siguiente:
 A continuacion se muestra una grafica con la mediana de salidas y entradas, y de semanas y fines de semana. 
 
 <table>
+Dias de la semana
   <tr>
     <td><img src="graph_daily/media/entradas semana.png" width="400"></td>
     <td><img src="graph_daily/media/salidas semana.png" width="400"></td>
   </tr>
+Fines de semana
   <tr>
     <td><img src="graph_daily/media/entradas finde semana.png" width="400"></td>
     <td><img src="graph_daily/media/salidas finde semana.png" width="400"></td>
