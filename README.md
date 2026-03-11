@@ -37,9 +37,10 @@ Se buscan responder 4 preguntas al finalizar estre proyecto
 - Generar estadísticas diarias de entradas y salidas.
 - Posibles patrones de conducta en el uso del automovil
 
+_El Modelo Bytetrack cambia constantemente la deteccion del objeto y alterna entre objeto "truck/car", no se sabe si es por calidad de grabacion o por el modelo en si, a futuro mejorar._
+
 ![Detection and ROI](video/sample.gif)
 
-_El Modelo Bytetrack cambia constantemente la deteccion del objeto y alterna entre objeto "truck/car", no se sabe si es por calidad de grabacion o por el modelo en si, a futuro mejorar._
 ---
 
 # Flujo de trabajo
@@ -69,12 +70,17 @@ En base a los datos aqui mostrados, podemos concluir lo siguiente:
 A continuacion se muestra una grafica con la mediana de salidas y entradas, y de semanas y fines de semana. 
 
 <table>
-Dias de la semana
+  <tr>
+    <th colspan="2">Días de la semana</th>
+  </tr>
   <tr>
     <td><img src="graph_daily/media/entradas semana.png" width="400"></td>
     <td><img src="graph_daily/media/salidas semana.png" width="400"></td>
   </tr>
-Fines de semana
+
+  <tr>
+    <th colspan="2">Fines de semana</th>
+  </tr>
   <tr>
     <td><img src="graph_daily/media/entradas finde semana.png" width="400"></td>
     <td><img src="graph_daily/media/salidas finde semana.png" width="400"></td>
