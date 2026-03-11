@@ -1,11 +1,15 @@
-# Conteo de entrada y salida de vehiculos
+# Conteo de entrada y salida de vehiculos de estacionamiento residencial
 
 ---
 
 # Description
-Se recopilaran datos de un estacionamiento residencial con el fin de registrar entradas y salidas diarias desde las 6:00 hasta las 21:00 durante el mes de Noviembre. El objetivo es determinar a que horas hay mas entrada y salida de vehiculos y finalmente que dias la gente usa mas y que dias usa menos sus autos.
+Se recopilaran datos de un estacionamiento residencial con el fin de registrar entradas y salidas diarias. 
+El objetivo es determinar a que horas hay mas entrada y salida de vehiculos y finalmente que dias la gente usa mas y que dias usa menos sus autos.
 El sistema analiza grabaciones en formato .mp4 provenientes de una cámara IP. 
 El enfoque del proyecto es simple y directo: usar un único ROI (Región de Interés) para identificar el movimiento de vehículos y su dirección, sin depender de otros elementos del entorno.
+
+El conteo de autos se recolecto desde Noviembre 10 de 2025 hasta Noviembre 30 de 2025.
+El registro comienza a las 6:00 y termina a las 21:00 de manera ininterrumpida.
 
 Se buscan responder 4 preguntas al finalizar estre proyecto
 1. A que hora salen mas autos?
@@ -31,9 +35,11 @@ Se buscan responder 4 preguntas al finalizar estre proyecto
 - Determinar si un vehículo está entrando o saliendo.
 - Registrar fecha y hora de cada evento.
 - Generar estadísticas diarias de entradas y salidas.
+- Posibles patrones de conducta en el uso del automovil
 
 ![Detection and ROI](video/sample.gif)
 
+El Modelo Bytetrack cambia constantemente la deteccion del objeto y alterna entre objeto "truck/car", no se sabe si es por calidad de grabacion o por el modelo en si, a futuro mejorar.
 ---
 
 # Flujo de trabajo
@@ -60,6 +66,16 @@ Resultados finales
 En base a los datos aqui mostrados, podemos concluir lo siguiente:
 
 1. Los dias que mayor entrada y salida de vehiculos hay es dentro de la semana (Lunes - Viernes).
+A continuacion se muestra una grafica con la mediana de salidas y entradas, y de semanas y fines de semana. 
+
+Dias de la semana
+<img src="graph_daily/media/entradas semana.png" width="50%">
+<img src="graph_daily/media/salidas semana.png" width="50%">
+
+Fines de semana
+<img src="graph_daily/media/entradas finde semana.png" width="50%">
+<img src="graph_daily/media/salidas finde semana.png" width="50%">
+
 2. El pico de hora de salida es a las 7:00. Eso coincide con las horas de entrada al trabajo. Y el pico de horas de entrada es dentro de las 18:00 y 19:00. Lo que tambien coincide con los horarios laborales regulares.
 3. Los dias que menor entrada y salida de vehiculos son los dias sabado y domingo.
 4. Las entradas son proporcionales a las salidas.
